@@ -129,7 +129,7 @@ export default {
       if (this.clearabled) this.showClose = false
     },
     clearableAct () { // 清除数据操作
-      this.val = this.multipled ? [] : ''
+      this.val = this.multipled ? this.val.splice(0, this.val.length) : ''
       this.closed()
     },
     tableRowClassName ({ row, rowIndex }) { // 重置表格中点中样式
@@ -159,17 +159,19 @@ export default {
     },
     valid () { // 表单验证 如果需要 严格 的blur change 验证 可以通过 this.$parent.rules 拿到 当前字段验证方式 在进行详细验证 时间有限暂未继续编写
       const prop = this.$parent.prop
+      console.log('change2', prop)
       if (prop) this.$parent.form.validateField(prop)
     }
   },
   watch: {
     value (v) { // 监听值变动
       this.evaluate(v)
-      this.valid() // 表单验证
     },
     val (v) { // 值变动执行方法
       // 多选监听高度
       if (this.multipled) this.$nextTick(this.computeHeight)
+      this.$emit('input', v)
+      this.$nextTick(this.valid) // 表单验证
     },
     visiblePopover (v) { // 根据po是否显示判定input是否聚焦
       if (v) {

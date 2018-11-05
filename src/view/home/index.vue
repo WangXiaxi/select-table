@@ -14,6 +14,7 @@
           multiple
           placeholder="请选择选项"
           ></el-select-table>
+          {{ ruleForm.param1 }}
       </el-form-item>
 
       <el-form-item label="测试单选" prop="param2">
@@ -28,6 +29,7 @@
           clearable
           placeholder="请选择选项"
           ></el-select-table>
+          {{ ruleForm.param2 }}
       </el-form-item>
 
     </el-form>
@@ -41,7 +43,7 @@ export default {
   },
   data () {
     return {
-      tableConfig: [
+      tableConfig: [ // table 配置表头
         {
           keyName: 'v',
           name: '序号',
@@ -70,25 +72,20 @@ export default {
         { v: 4, t: '测试4', x: '二年级一班', y: 19 }
       ],
       ruleForm: {
-        param1: [],
+        param1: [1],
         param2: ''
       },
       rules: {
         param1: [
-          { required: true, message: '请选择内容' }
+          { required: true, message: '请选择多选' }
         ],
         param2: [
-          { required: true, message: '请选择内容' }
+          { required: true, message: '请选择单选' }
         ]
       }
     }
   },
   created () {
-    // setTimeout(() => {
-    //   this.$refs.form.validate(v => {
-    //     console.log(v)
-    //   })
-    // }, 3000)
   },
   mounted () {
   },
@@ -96,8 +93,11 @@ export default {
 
   },
   watch: {
-    'ruleForm.tablex' (v) {
-      console.log('change', v)
+    'ruleForm.param1' (v) {
+      console.log('change1', v)
+    },
+    'ruleForm.param2' (v) {
+      console.log('change2', v)
     }
   }
 }
