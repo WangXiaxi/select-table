@@ -62,7 +62,7 @@ export default {
     'options', // options配置
     'multiple', // 是否多选
     'clearable', // 是否显示清除按钮
-    'placeholder'
+    'placeholder' // placeholder
   ],
   data () {
     return {

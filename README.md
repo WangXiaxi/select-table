@@ -1,8 +1,25 @@
 # select
 
+基于element扩展的下拉表格组件
+
 > select-table
 
 ## Build Setup
+
+```
+/**
+	* param
+		'value', // v-model接受值 多选请传数组
+	  'size', // 同 element size
+	  'valName', // 显示词
+	  'valKey', // 值
+	  'tableConfig', // 表头配置
+	  'options', // options配置
+	  'multiple', // 是否多选
+	  'clearable', // 是否显示清除按钮
+	  'placeholder' // placeholder
+**/
+```
 
 ``` bash
 # install dependencies
