@@ -17,7 +17,6 @@
 'multiple', // 是否多选
 'clearable', // 是否显示清除按钮
 'placeholder' // placeholder
-**/
 ```
 
 ``` bash
