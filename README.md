@@ -6,7 +6,7 @@
 
 ## Build Setup
 
-```
+``` bash
 # param
 'value', // v-model接受值 多选请传数组
 'size', // 同 element size
