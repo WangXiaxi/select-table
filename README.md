@@ -7,7 +7,7 @@
 ## Build Setup
 
 ```
-#param
+# param
 'value', // v-model接受值 多选请传数组
 'size', // 同 element size
 'valName', // 显示词
