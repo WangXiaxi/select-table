@@ -88,9 +88,7 @@ export default {
       return this.clearable === '' || this.clearable
     },
     valSHow () { // 单选显示值
-      const [cur] = this.options.filter(c => {
-        return c[this.valKey] === this.val
-      })
+      const [cur] = this.options.filter(c => c[this.valKey] === this.val)
       return cur ? cur[this.valName] : ''
     },
     valList () { // 多选显示列表
@@ -157,9 +155,9 @@ export default {
     evaluate (v) { // 赋值处理
       this.val = v
     },
-    valid () { // 表单验证 如果需要 严格 的blur change 验证 可以通过 this.$parent.rules 拿到 当前字段验证方式 在进行详细验证 时间有限暂未继续编写
-      const prop = this.$parent.prop
-      console.log('change2', prop)
+    valid () { // 表单验证
+      console.log('change2', this.$parent.prop)
+      const prop = this.$parent.prop // 字段
       if (prop) this.$parent.form.validateField(prop)
     }
   },

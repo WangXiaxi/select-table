@@ -1,6 +1,7 @@
 <template>
   <div>
-    <el-form ref="form" :model="ruleForm" :rules="rules" label-width="80px">
+    <el-form ref="formx" :model="ruleForm" :rules="rules" label-width="80px">
+      {{ ruleForm.param1 }}
       <el-form-item label="测试多选" prop="param1">
         <el-select-table
           style="width: 300px;"
@@ -14,9 +15,8 @@
           multiple
           placeholder="请选择选项"
           ></el-select-table>
-          {{ ruleForm.param1 }}
       </el-form-item>
-
+      {{ ruleForm.param2 }}
       <el-form-item label="测试单选" prop="param2">
         <el-select-table
           style="width: 300px;"
@@ -29,9 +29,7 @@
           clearable
           placeholder="请选择选项"
           ></el-select-table>
-          {{ ruleForm.param2 }}
       </el-form-item>
-
     </el-form>
   </div>
 </template>
@@ -43,6 +41,8 @@ export default {
   },
   data () {
     return {
+      value: '',
+      input: '',
       tableConfig: [ // table 配置表头
         {
           keyName: 'v',
@@ -86,11 +86,17 @@ export default {
     }
   },
   created () {
+    setTimeout(() => {
+      console.log(document.querySelectorAll('input')[0].blur())
+    }, 5000)
   },
   mounted () {
+    console.log(window.selectBlur)
   },
   methods: {
-
+    clickxxx () {
+      console.log('失焦点')
+    }
   },
   watch: {
     'ruleForm.param1' (v) {
