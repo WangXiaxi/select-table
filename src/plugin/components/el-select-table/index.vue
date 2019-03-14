@@ -156,7 +156,7 @@ export default {
       this.val = v
     },
     valid () { // 表单验证
-      console.log('change2', this.$parent.prop)
+      console.log('change2', this.$parent.form)
       const prop = this.$parent.prop // 字段
       if (prop) this.$parent.form.validateField(prop)
     }

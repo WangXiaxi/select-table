@@ -30,6 +30,7 @@
           placeholder="请选择选项"
           ></el-select-table>
       </el-form-item>
+      <el-button @click="submit">提交</el-button>
     </el-form>
   </div>
 </template>
@@ -77,7 +78,7 @@ export default {
       },
       rules: {
         param1: [
-          { required: true, message: '请选择多选' }
+          { required: true, message: '请选择多选', trigger: 'blur' }
         ],
         param2: [
           { required: true, message: '请选择单选' }
@@ -94,6 +95,11 @@ export default {
     console.log(window.selectBlur)
   },
   methods: {
+    submit () {
+      this.$refs.formx.validate(v => {
+        console.log(v)
+      })
+    },
     clickxxx () {
       console.log('失焦点')
     }
