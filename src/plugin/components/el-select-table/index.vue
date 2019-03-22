@@ -73,7 +73,6 @@ export default {
     }
   },
   created () {
-    this.evaluate(this.value) // 赋值 处理
     this.$nextTick(() => {
       if (this.multipled) this.computeInitial() // 多选 计算
     })
@@ -162,8 +161,11 @@ export default {
     }
   },
   watch: {
-    value (v) { // 监听值变动
-      this.evaluate(v)
+    value: {
+      handler (v) {
+        this.evaluate(v)
+      },
+      immediate: true
     },
     val (v) { // 值变动执行方法
       // 多选监听高度
@@ -172,11 +174,8 @@ export default {
       this.$nextTick(this.valid) // 表单验证
     },
     visiblePopover (v) { // 根据po是否显示判定input是否聚焦
-      if (v) {
-        this.$refs.input.focus()
-      } else {
-        this.$refs.input.blur()
-      }
+      const event = v ? 'focus' : 'blur'
+      this.$refs.input[event]()
     }
   }
 }

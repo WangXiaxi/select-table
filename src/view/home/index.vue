@@ -92,16 +92,12 @@ export default {
     }, 5000)
   },
   mounted () {
-    console.log(window.selectBlur)
   },
   methods: {
     submit () {
       this.$refs.formx.validate(v => {
         console.log(v)
       })
-    },
-    clickxxx () {
-      console.log('失焦点')
     }
   },
   watch: {
