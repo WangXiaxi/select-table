@@ -37,7 +37,7 @@
 
 <script>
 export default {
-  name: 'home', // 命名规范
+  name: 'Home', // 命名规范
   components: {
   },
   data () {
