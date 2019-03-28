@@ -55,18 +55,18 @@ export default {
   },
   props: [
     'value', // v-model接受值 多选请传数组
-    'size', // 同 element size
+    'size', // 同 element size: mini small medium
     'valName', // 显示词
     'valKey', // 值
-    'tableConfig', // 表头配置
-    'options', // options配置
+    'tableConfig', // 表头配置 [{ keyName: '', name: '', width: '' }]
+    'options', // options配置 []
     'multiple', // 是否多选
     'clearable', // 是否显示清除按钮
     'placeholder' // placeholder
   ],
   data () {
     return {
-      showClose: false, // 显示
+      showClose: false, // 显示 关闭按钮
       visiblePopover: false,
       val: '',
       inputHeight: 0 // 当前 高度

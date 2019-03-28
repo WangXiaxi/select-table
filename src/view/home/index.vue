@@ -6,7 +6,7 @@
         <el-select-table
           style="width: 300px;"
           v-model="ruleForm.param1"
-          size="medium"
+          size="mini"
           val-key="v"
           val-name="t"
           :table-config="tableConfig"
@@ -70,7 +70,9 @@ export default {
         { v: 1, t: '测试1', x: '二年级二班', y: 18 },
         { v: 2, t: '测试2', x: '二年级三班', y: 28 },
         { v: 3, t: '测试3', x: '二年级一班', y: 18 },
-        { v: 4, t: '测试4', x: '二年级一班', y: 19 }
+        { v: 4, t: '测试4', x: '二年级一班', y: 19 },
+        { v: 5, t: '测试5', x: '二年级一班', y: 18 },
+        { v: 6, t: '测试6', x: '二年级一班', y: 19 }
       ],
       ruleForm: {
         param1: [1],
