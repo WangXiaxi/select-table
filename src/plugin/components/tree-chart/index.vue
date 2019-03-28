@@ -112,12 +112,8 @@ export default {
     width: 1px;
     border-bottom-left-radius: 4px;
   }
-  .tree-chart >>> li:only-child>.line-after,
-  .tree-chart >>> li:only-child>.line-before {
+  .tree-chart >>> li:only-child>.line-after {
     display: none;
-  }
-  .tree-chart >>> ul ul li:only-child>.line-before {
-    display: inline-block;
   }
   .tree-chart >>> li:not(:first-child)>.line-before {
     left: -19px;
