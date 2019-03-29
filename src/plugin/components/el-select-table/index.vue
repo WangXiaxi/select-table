@@ -73,11 +73,9 @@ export default {
     }
   },
   created () {
-    this.$nextTick(() => {
-      if (this.multipled) this.computeInitial() // 多选 计算
-    })
   },
   mounted () {
+    if (this.multipled) this.computeInitial() // 多选 计算
   },
   computed: {
     multipled () {
@@ -118,6 +116,7 @@ export default {
       const elInput = this.$refs.input
       this.inputHeight = elInput.clientHeight + 2 // 多选 获取默认input 高度
       this.$refs.selectTags.style.maxWidth = `${elInput.clientWidth - 30}px` // 计算selectTags宽度
+      if (this.val.length > 0) this.computeHeight()
     },
     mouseover () { // 鼠标移入
       if (this.clearabled) this.showClose = true
@@ -130,11 +129,13 @@ export default {
       this.closed()
     },
     tableRowClassName ({ row, rowIndex }) { // 重置表格中点中样式
+      if (row.disabled) return 'row-forbidden' // 禁用
       if (!this.multipled && this.val === row[this.valKey]) return 'row-selected row-reset'
       if (this.multipled && this.val.indexOf(row[this.valKey]) > -1) return 'row-selected row-reset'
       return 'row-reset'
     },
     rowClick (row, event, column) { // 行点击选择
+      if (row.disabled) return
       const val = row[this.valKey]
       if (!this.multipled) {
         this.val = val
@@ -180,22 +181,27 @@ export default {
   }
 }
 </script>
-<style type="text/css">
+<style type="text/css" scoped>
   .el-select-box, .el-select-box .el-select {
     position: relative;
     width: 100%;
   }
-  .el-select-table .row-reset {
+  .el-select-table >>> .row-reset {
     cursor: pointer;
   }
-  .el-select-table .row-selected {
+  .el-select-table >>> .row-forbidden {
+    cursor: not-allowed;
+    background-color: #f5f7fa;
+    color: #aaa;
+  }
+  .el-select-table >>> .row-selected {
     color: #409eff;
     background: rgba(64, 158, 255, .1);
   }
   .el-select-table-popper {
     padding-top: 5px;
   }
-  .el-select-table.el-table td, .el-select-table.el-table th {
+  .el-select-table.el-table >>> td, .el-select-table.el-table >>> th {
     padding: 4px 0;
   }
 </style>

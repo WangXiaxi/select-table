@@ -4,7 +4,7 @@
       {{ ruleForm.param1 }}
       <el-form-item label="测试多选" prop="param1">
         <el-select-table
-          style="width: 300px;"
+          style="width: 230px;"
           v-model="ruleForm.param1"
           size="mini"
           val-key="v"
@@ -72,10 +72,10 @@ export default {
         { v: 3, t: '测试3', x: '二年级一班', y: 18 },
         { v: 4, t: '测试4', x: '二年级一班', y: 19 },
         { v: 5, t: '测试5', x: '二年级一班', y: 18 },
-        { v: 6, t: '测试6', x: '二年级一班', y: 19 }
+        { v: 6, t: '测试6', x: '二年级一班', y: 19, disabled: true }
       ],
       ruleForm: {
-        param1: [1],
+        param1: [1, 2, 3, 4],
         param2: ''
       },
       rules: {
@@ -89,9 +89,6 @@ export default {
     }
   },
   created () {
-    setTimeout(() => {
-      console.log(document.querySelectorAll('input')[0].blur())
-    }, 5000)
   },
   mounted () {
   },

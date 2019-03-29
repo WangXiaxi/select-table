@@ -6,6 +6,7 @@
     <li v-for="(item, index) in nodes" :key="index" :ref="`li-${index}`">
       <b class="line-before"></b>
       <div class="box">
+        <!-- 节点信息 -->
         <span>{{item.num}}</span>
         <div class="info"></div>
         <div class="time"></div>
