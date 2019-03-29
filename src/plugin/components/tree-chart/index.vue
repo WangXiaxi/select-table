@@ -8,7 +8,7 @@
 import tree from './children/tree.vue'
 
 export default {
-  name: 'treeChart', // 命名规范
+  name: 'TreeChart', // 命名规范
   components: {
     tree
   },

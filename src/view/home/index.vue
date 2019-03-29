@@ -4,9 +4,9 @@
       {{ ruleForm.param1 }}
       <el-form-item label="测试多选" prop="param1">
         <el-select-table
-          style="width: 230px;"
+          style="width: 100px;"
           v-model="ruleForm.param1"
-          size="mini"
+          size="medium"
           val-key="v"
           val-name="t"
           :table-config="tableConfig"
@@ -75,7 +75,7 @@ export default {
         { v: 6, t: '测试6', x: '二年级一班', y: 19, disabled: true }
       ],
       ruleForm: {
-        param1: [1, 2, 3, 4],
+        param1: [],
         param2: ''
       },
       rules: {

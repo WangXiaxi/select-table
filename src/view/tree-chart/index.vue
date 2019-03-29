@@ -14,9 +14,6 @@ export default {
           num: 1,
           children: [
             {
-              num: 3
-            },
-            {
               num: 5,
               children: [
                 {

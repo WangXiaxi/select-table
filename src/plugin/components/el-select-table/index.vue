@@ -85,7 +85,7 @@ export default {
       return this.clearable === '' || this.clearable
     },
     valSHow () { // 单选显示值
-      const [cur] = this.options.filter(c => c[this.valKey] === this.val)
+      const [cur] = this.options.filter(c => c[this.valKey] === this.val) // some every findIndex find reduce map forEach
       return cur ? cur[this.valName] : ''
     },
     valList () { // 多选显示列表

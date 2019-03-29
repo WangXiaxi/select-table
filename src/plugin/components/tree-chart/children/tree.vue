@@ -20,7 +20,7 @@
 const height = 110
 export default {
   props: ['nodes'],
-  name: 'tree',
+  name: 'Tree',
   mounted () {
     const refs = this.$refs
     this.nodes.forEach((c, i) => { // 执行下由于线个marginBottom都需要计算所以不用computed不然要执行两遍
