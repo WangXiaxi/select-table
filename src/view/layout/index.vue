@@ -1,6 +1,6 @@
 <template>
-  <div class="app-wrapper">
-    <div class="top-container">
+  <!-- <div class="app-wrapper"> -->
+    <!-- <div class="top-container">
       <el-tag
         v-for="tag in tags"
         @click.native="goHere(tag.path)"
@@ -15,8 +15,9 @@
       <div class="main-container">
         <router-view ref="routerview" v-if="isRouterAlive"></router-view>
       </div>
-    </div>
-  </div>
+    </div> -->
+    <router-view ref="routerview" v-if="isRouterAlive"></router-view>
+  <!-- </div> -->
 </template>
 <script>
 export default {
