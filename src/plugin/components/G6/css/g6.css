@@ -6049,7 +6049,7 @@ a.ant-btn-sm {
 
 #navigator{
   width: 200px;
-  height: 176px;
+  height: 186px;
   position: absolute;
   bottom: 0px;
   right: 0px;
@@ -27705,4 +27705,17 @@ input{
 }
 .dropdown-inner-ctn.el-dropdown {
   padding: 10px;
+}
+.container-fluid {
+  overflow: hidden;
+}
+
+.m10 {
+  margin: 10px;
+}
+.ml10 {
+  margin-left: 10px;
+}
+.tl {
+  text-align: left;
 }

@@ -6,7 +6,7 @@
 
 <script>
 export default {
-  name: 'date', // 命名规范
+  name: 'antv-g6', // 命名规范
   components: {
   },
   data () {

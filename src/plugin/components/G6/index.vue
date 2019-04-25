@@ -3,10 +3,10 @@
     <div class="editor">
       <!-- 工具栏 DOM 结构规约参考 Toolbar API -->
       <div id="toolbar" class="toolbar">
+        <i data-command="addBeginNode" class="command iconfont anticon-file-add" title="新增起始节点"></i>
         <i data-command="undo" class="command iconfont icon-undo" title="撤销"></i>
         <i data-command="redo" class="command iconfont icon-redo" title="重做"></i>
         <span class="separator"></span>
-        <i data-command="addBeginNode" class="command iconfont icon-to-back" title="新增起始节点"></i>
         <i data-command="copy" class="command iconfont icon-copy-o" title="复制"></i>
         <i data-command="paste" class="command iconfont icon-paster-o" title="粘贴"></i>
         <i data-command="delete" class="command iconfont icon-delete-o" title="删除"></i>
@@ -77,6 +77,24 @@
             <div data-status="node-selected" class="pannel">
               <div class="pannel-title">节点</div>
               <div class="pannel-container">
+                <el-form class="m10" ref="form" :model="nodeForm" label-width="60px" size="mini">
+                  <el-form-item label="活动名称">
+                    <el-input v-model="nodeForm.name"></el-input>
+                  </el-form-item>
+                  <el-col :span="12">
+                    <el-form-item label="宽" label-width="30px">
+                      <el-input v-model="nodeForm.width"></el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-form-item label="高" label-width="30px">
+                      <el-input v-model="nodeForm.height"></el-input>
+                    </el-form-item>
+                  </el-col>
+                </el-form>
+                <div class="tl ml10">
+                  <el-color-picker v-model="nodeForm.color"></el-color-picker>
+                </div>
               </div>
             </div>
             <div data-status="edge-selected" class="pannel">
@@ -89,7 +107,9 @@
             </div>
             <div data-status="canvas-selected" class="pannel">
               <div class="pannel-title">画布</div>
-              <div class="pannel-container"></div>
+              <div class="pannel-container">
+                <el-checkbox class="m10" v-model="toggleGridFlag" @change="toggleGridChange">网格对齐</el-checkbox>
+              </div>
             </div>
             <div data-status="multi-selected" class="pannel">
               <div class="pannel-title">多选</div>
@@ -100,7 +120,8 @@
           <div id="navigator">
             <div class="pannel-title">缩略图</div>
             <!-- 缩略图 DOM 结构规约参考 Minimap API -->
-            <div id="minimap"></div>
+            <div id="minimap">
+            </div>
             <div class="zoom-slider">
               <div class="slider-outer-ctn">
                 <el-slider
@@ -160,200 +181,59 @@
 
 <script>
 import G6Editor from '@antv/g6-editor'
-// import G6 from '@antv/g6'
-// import '@antv/g6/build/plugin.tool.tooltip'
-// import BaseTable from 'components/base/table/baseTable'
 
-/**
- * anchor某些情况下不起作用（尤其是自己画的图很乱时，g6会自己调节）
- */
-const $http = () => {}
-const isEmptyStr = data => {
-  return !!data
-}
-// const objCopy = data => {
-//   return JSON.parse(JSON.stringify(data))
-// }
 export default {
   components: {
-    // BaseTable
   },
   data() {
     return {
-      $http,
-      conditionList: [], // 条件列表
-      operatorList: [], // 操作符列表
-      valueList: [], // 条件的值列表
-      operatorMap: {}, // 操作符对象
-      valueMap: {}, // 条件值对象
-      gradeList: [
-        { name: 'Ⅰ级', code: 1 },
-        { name: 'Ⅱ级', code: 2 },
-        { name: 'Ⅲ级', code: 3 },
-        { name: 'Ⅳ级', code: 4 }
-      ], // 级别列表
-      levelList: [
-        { name: '1级', code: 1 },
-        { name: '2级', code: 2 },
-        { name: '3级', code: 3 },
-        { name: '4级', code: 4 }
-      ], // 程度列表
-      colorList: ['#FA8C16', '#1890FF', '#13C2C2', '#722ED1'], // 级别颜色列表
-      fontSizeList: [24, 20, 16, 12],
-
       editor: null,
-      selectedModel: {}, // 当前选中项数据模型
       curZoom: 1, // 当前缩放比率
       minZoom: 0.5, // 最小缩放比率
       maxZoom: 2, // 最大缩放比率
-
-      condType: '',
-      operator: '',
-      value: '',
-      grade: '',
-      level: '',
-      fontSize: '',
-      color: 'red',
       /* 控制右侧详情面板的内容显现 start */
-      showGrade: false,
-      showOperator: false,
-      showCond: false,
-      showValue: true,
-      showDisease: false,
-      /* 控制右侧详情面板的内容显现 end */
-      changeData: false,
       zoomSlider: 100, // 默认滑块取值为100
       valueFilterable: false, // 值下拉框是否可以检索
       /* 疾病选择弹窗 start */
       diseaseDialogVisible: false, // 显示疾病选择弹窗
       diseaseTableClass: 'disease-select-table',
       diseaseTableHeadClass: 'no-margin',
-      diseaseColumns: [
-        { label: '名称', prop: 'name' },
-        { label: '编码', prop: 'code', width: '200' }
-      ],
-      selectDiseases: [], // 已选疾病列表
-      /* 疾病选择弹窗 end */
-      values: [],
-      names: [],
-      diseaseId: this.$route.query.diseaseId, // 当前疾病id
-      diseaseName: this.$route.query.diseaseName, // 当前疾病名称
-      diseaseSelectedLength: 0, // 当前已选疾病的条数
-      hasInitNode: false // 是否已经初始化node
+      toggleGridFlag: false,
+      diseaseName: '我是起始节点：派大星',
+      nodeForm: { // 节点编辑消息队列
+      }
     }
   },
   created() {
-    this.getAllConditions() // 获取所有的条件
   },
   mounted() {
-    this.setEditorHeight() // 设置宽度和高度
-    this.initG6Editor(true)
+    this.$refs.container.style.height = `${this.setEditorHeight() + 42}px`
+    this.initG6Editor()
   },
   watch: {
-    condType(curValue, oldValue) {
-      console.log(curValue, oldValue)
-      if (this.changeData) {
-        if (curValue === '1') {
-          this.valueFilterable = true
-        } else {
-          this.valueFilterable = false
-        }
-        if (!isEmptyStr(curValue)) {
-          let label = this.getGraphLabel()
-          console.log(label)
-          this.updateGraph({
-            condType: curValue,
-            label: label
-          })
-        }
-      }
-    },
-    operator(curValue, oldValue) {
-      if (this.changeData) {
-        if (!isEmptyStr(curValue)) {
-          let label = this.getGraphLabel()
-          this.updateGraph({
-            operator: curValue,
-            label: label
-          })
-        }
-      }
-    },
-    grade(curValue, oldValue) {
-      if (this.changeData) {
-        if (!isEmptyStr(curValue)) {
-          let label = ''
-          let gradeObj = this.gradeList.find(item => {
-            return item.code === curValue
-          })
-          label = gradeObj.name
-          this.color = this.colorList[curValue - 1]
-          this.updateGraph({
-            label: label,
-            grade: curValue,
-            color: this.color
-          })
-        }
-      }
-    },
-    level(curValue, oldValue) {
-      if (this.changeData) {
-        if (!isEmptyStr(curValue)) {
-          let gradeObj = this.gradeList.find(item => {
-            return item.code === this.grade
-          })
-          this.fontSize = this.fontSizeList[this.level - 1]
-          this.updateGraph({
-            level: curValue,
-            label: {
-              text: gradeObj.name,
-              fontSize: this.fontSize
-            }
-          })
-        }
-      }
-    },
-
-    value(curValue, oldValue) {
-      if (this.changeData) {
-        if (!isEmptyStr(curValue)) {
-          let valueObj = this.valueList.find(item => {
-            return item.code === curValue
-          })
-          let label = this.getGraphLabel()
-          this.updateGraph({
-            label: label,
-            value: curValue,
-            values: [curValue],
-            names: [valueObj.name]
-          })
-        }
-      }
-    }
   },
   methods: {
+    /**
+     * 是否显示网格
+     */
+    toggleGridChange(v) {
+      const editor = this.editor
+      const page = editor.getCurrentPage()
+      if (v) {
+        page.showGrid()
+      } else {
+        page.hideGrid()
+      }
+    },
+    /**
+     * 获取高度
+     */
     setEditorHeight() {
-      const bodyHeight =
-        document.documentElement.clientHeight || document.body.clientHeight
-      let containarHeight = bodyHeight - 70
+      const bodyHeight = document.documentElement.clientHeight || document.body.clientHeight
+      let containarHeight = bodyHeight - 42
       containarHeight = containarHeight < 510 ? 510 : containarHeight
-      this.$refs['container'].style.height = containarHeight + 'px'
+      return containarHeight
     },
-    /**
-     * 获取所有的条件
-     */
-    getAllConditions() {
-    },
-    /**
-     *根据条件列表，依次获取各条件下对应的operator和值（目的：将他们缓存起来，减少请求）
-     */
-    getEachOperatorAndValue() {
-      this.conditionList.forEach((item, index) => {
-        this.getOprsByCondi(item.code)
-        this.getValsByCondi(item.code)
-      })
-    },
-
     /**
      * 根据条件获取操作列表
      * @param condiIdx 条件index
@@ -397,8 +277,8 @@ export default {
         // 命令是否可用
         enable(editor) {
           const curPage = editor.getCurrentPage()
-          let beginNode = curPage.find(_self.diseaseId)
-          if (!beginNode && _self.hasInitNode) {
+          const nodes = curPage.getNodes()
+          if (!nodes.length) {
             // 起始节点不存在
             return true
           } else {
@@ -407,7 +287,7 @@ export default {
         },
         // 正向命令
         execute(editor) {
-          let rootWidth = _self.diseaseName.length * 13
+          let rootWidth = _self.diseaseName.length * 13 + 20
           rootWidth = rootWidth < 72 ? 72 : rootWidth
           const curPage = editor.getCurrentPage()
           curPage.add('node', {
@@ -437,15 +317,8 @@ export default {
     },
     /**
      * 初始化g6Editor
-     * @param flag true 从接口获取图表数据；false:从缓存中获取图表数据（界面侧边栏收缩、展开）
      */
-    initG6Editor(flag) {
-    //   const _self = this
-      let tempData = []
-      if (!flag) {
-        tempData = this.editor.getCurrentPage().save()
-        this.editor.destroy()
-      }
+    initG6Editor() {
       this.editor = new G6Editor()
       this.setCustomCommand()
       const minimap = new G6Editor.Minimap({
@@ -466,7 +339,7 @@ export default {
       const page = new G6Editor.Flow({
         graph: {
           container: 'page',
-          height: 800
+          height: this.setEditorHeight()
         },
         shortcut: {
           save: true
@@ -485,11 +358,8 @@ export default {
       this.editor.add(detailpannel)
       this.editor.add(page)
       this.setEventListenner() // 设置事件监听
-      if (flag) {
-        this.getNodesByDiseaseId(this.diseaseId)
-      } else {
-        page.read(tempData)
-      }
+      // const tempData = {}
+      // page.read(tempData) // 读数据
     },
 
     /**
@@ -498,16 +368,15 @@ export default {
     setEventListenner() {
       const _self = this
       const curPage = this.editor.getCurrentPage()
-      curPage.on('hoveranchor:beforeaddedge', ev => {
+      curPage.on('hoveranchor:beforeaddedge', ev => { // 监听显示锚点事件
         let vm = ev.item.getModel()
         console.log(vm.shape, 'action: hoveranchor:beforeaddedge')
       })
-      curPage.on('dragedge:beforeshowanchor', ev => {
-        let vm = ev.item.getModel()
-        console.log(vm.shape, 'action: dragedge:beforeshowanchor')
+      curPage.on('dragedge:beforeshowanchor', ev => { // 监听显示锚点虚线事件
+        console.log('action: dragedge:beforeshowanchor')
       })
 
-      curPage.on('afteritemselected', ev => {
+      curPage.on('afteritemselected', ev => { // 选中节点事件
         let vm = ev.item.getModel()
         console.log(vm.shape, 'action: afteritemselected')
       })
@@ -516,9 +385,9 @@ export default {
         _self.curZoom = zoom
         _self.zoomSlider = zoom * 100
       })
-      this.editor.on('aftercommandexecute', ev => {
+      this.editor.on('aftercommandexecute', ev => { // 监听命令
         console.log(ev, 'action: aftercommandexecute')
-        if (ev.command.name === 'add') {
+        if (ev.command.name === 'add') { // 添加节点
           switch (ev.command.addModel.shape) {
             case 'flow-circle': // 节点二
               console.log('add:flow-circle')
@@ -536,21 +405,6 @@ export default {
         }
       })
     },
-
-    enableChangeData() {
-      this.changeData = true
-    },
-    condTypeSelectChange(value) {
-      console.log('condTypeSelectChange')
-      // this.updateGraph({
-      //   condType: value,
-      //   operator: this.operatorList[0].code,
-      //   values: values,
-      //   names: names,
-      //   label: diseaseListStr,
-      //   size: nodeWidth + '*48'
-      // })
-    },
     /**
      * 更新当前选中的节点
      * @param updateModel 需要更新的数据模型 object
@@ -564,31 +418,6 @@ export default {
           page.update(item, updateModel)
         })
       })
-    },
-    /**
-     * 获取图形的label
-     */
-    getGraphLabel() {
-      let result = ''
-      let conditionObj = this.conditionList.find(item => {
-        return item.code === this.condType
-      })
-      let operotorObj = this.operatorList.find(item => {
-        return item.code === this.operator
-      })
-      let valueObj = this.valueList.find(item => {
-        return item.code === this.value
-      })
-      if (!isEmptyStr(conditionObj)) {
-        result += conditionObj.name
-      }
-      if (!isEmptyStr(operotorObj)) {
-        result += operotorObj.name
-      }
-      if (!isEmptyStr(valueObj)) {
-        result += valueObj.name
-      }
-      return result
     },
 
     /**
@@ -622,126 +451,14 @@ export default {
       page.zoom(zoom)
       this.curZoom = zoom
     },
-    // 显示疾病列表弹窗
-    showDiseaseDialog() {
-      this.selectDiseases = []
-      for (let i = 0; i < this.values.length; i++) {
-        this.selectDiseases.push({
-          id: this.values[i],
-          name: this.names[i]
-        })
-      }
-      this.diseaseDialogVisible = true
-      this.$nextTick(() => {
-        // 下面的方法需要在$nextTick后执行
-        this.$refs.diseaseTable.initTable() // 初始化疾病列表
-      })
-    },
 
     /**
-     *疾病表格渲染后事件(标识已选择疾病)
+     * 保存获取值操作
      */
-    afterRenderData(curDiseaseData) {
-      curDiseaseData.forEach((item, index, arr) => {
-        for (let i = 0; i < this.selectDiseases.length; i++) {
-          if (this.selectDiseases[i].id === item.id) {
-            this.$refs.diseaseTable.toggleRowSelection(item, true)
-            break
-          }
-        }
-      })
-    },
-    /**
-     * 疾病表格数据行checkbox点击事件
-     */
-    diseaseSelect(selection, row) {
-      if (!selection.includes(row)) {
-        // 取消选择
-        for (let i = 0, lenth = this.selectDiseases.length; i < lenth; i++) {
-          if (this.selectDiseases[i].id === row.id) {
-            this.selectDiseases.splice(i, 1)
-            break
-          }
-        }
-      } else {
-        this.selectDiseases.push({
-          id: row.id,
-          name: row.name
-        })
-      }
-    },
-
-    /**
-     * 疾病表格全选按钮点击事件
-     */
-    diseaseSelectAll(selection) {
-      let curDiseaseData = this.$refs.diseaseTable.getTableData()
-      if (selection.length === 0) {
-        // 取消全选
-        curDiseaseData.forEach((item, index, arr) => {
-          for (let i = 0; i < this.selectDiseases.length; i++) {
-            if (this.selectDiseases[i].id === item.id) {
-              this.selectDiseases.splice(i, 1)
-              break
-            }
-          }
-        })
-      } else {
-        // 全选
-        if (this.selectDiseases.length === 0) {
-          // 当前没有已选疾病
-          curDiseaseData.forEach((item, index, arr) => {
-            this.selectDiseases.push({
-              id: item.id,
-              name: item.name
-            })
-          })
-        } else {
-          // 当前有已选疾病
-          curDiseaseData.forEach((item, index, arr) => {
-            let flag = false
-            for (let i = 0; i < this.selectDiseases.length; i++) {
-              if (this.selectDiseases[i].id === item.id) {
-                flag = true
-                break
-              }
-              if (i === this.selectDiseases.length - 1 && !flag) {
-                this.selectDiseases.push({
-                  id: item.id,
-                  name: item.name
-                })
-              }
-            }
-          })
-        }
-      }
-    },
-    /**
-     * 移除已选择的疾病
-     * @param disease 当前移除的疾病数据
-     */
-    handleDiseaseClose(disease, index) {
-      this.selectDiseases.splice(index, 1)
-      let curDiseaseData = this.$refs.diseaseTable.getTableData()
-      for (let i = 0; i < curDiseaseData.length; i++) {
-        if (disease.id === curDiseaseData[i].id) {
-          this.$refs.diseaseTable.toggleRowSelection(curDiseaseData[i], false)
-          break
-        }
-      }
-    },
-
-    // 保存分级规则图
     saveGraph() {
-      // const curPage = this.editor.getCurrentPage()
-      // const graphData = curPage.save()
-      // const nodes = graphData.nodes || []
-      // const nodeList = curPage.getNodes()
-      // nodes.forEach((item, index) => {
-      //   // 只有新增/修改的锚点才会在dataMap中
-      //   switch (item.shape) {
-      //   }
-      // })
+      const curPage = this.editor.getCurrentPage()
+      const graphData = curPage.save()
+      console.log('save', graphData)
     }
   }
 }

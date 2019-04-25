@@ -1,6 +1,6 @@
 <template>
-  <!-- <div class="app-wrapper"> -->
-    <!-- <div class="top-container">
+  <div class="app-wrapper">
+    <div class="top-container" v-if="isShowTop">
       <el-tag
         v-for="tag in tags"
         @click.native="goHere(tag.path)"
@@ -15,19 +15,20 @@
       <div class="main-container">
         <router-view ref="routerview" v-if="isRouterAlive"></router-view>
       </div>
-    </div> -->
-    <router-view ref="routerview" v-if="isRouterAlive"></router-view>
-  <!-- </div> -->
+    </div>
+  </div>
 </template>
 <script>
 export default {
   name: 'layout',
   data () {
     return {
+      isShowTop: true,
       isRouterAlive: true,
       tags: [
         { name: '下拉表格', type: '', path: '/home' },
-        { name: '流程树', type: 'success', path: 'tree-chart' }
+        { name: '流程树', type: 'success', path: 'tree-chart' },
+        { name: 'antv-g6', type: 'success', path: 'antv-g6' }
       ]
     }
   },
@@ -39,6 +40,19 @@ export default {
     goHere (path) {
       console.log(path)
       this.$router.push(path)
+    }
+  },
+  watch: {
+    '$route': {
+      handler({ name }) {
+        const notNeedTop = ['antv-g6']
+        if (notNeedTop.findIndex(c => c === name) === -1) {
+          this.isShowTop = true
+        } else {
+          this.isShowTop = false
+        }
+      },
+      immediate: true
     }
   }
 }
