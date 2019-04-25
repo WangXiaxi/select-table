@@ -21,6 +21,8 @@
         <i data-command="toFront" class="command iconfont icon-to-front" title="层级前置"></i>
         <span class="separator"></span>
         <i data-command="multiSelect" class="command iconfont icon-select" title="多选"></i>
+        <i data-command="addGroup" class="command iconfont icon-group" title="成组"></i>
+        <i data-command="unGroup" class="command iconfont icon-ungroup" title="解组"></i>
         <span class="separator"></span>
         <i data-command="save" class="command iconfont icon-to-back" title="保存"></i>
       </div>
@@ -78,28 +80,37 @@
               <div class="pannel-title">节点</div>
               <div class="pannel-container">
                 <el-form class="m10" ref="form" :model="nodeForm" label-width="60px" size="mini">
-                  <el-form-item label="活动名称">
-                    <el-input v-model="nodeForm.name"></el-input>
+                  <el-form-item label="节点名称">
+                    <el-input v-model="nodeForm.label" @change="(v) => { this.nodeKeyChange('label', v) }"></el-input>
                   </el-form-item>
                   <el-col :span="12">
                     <el-form-item label="宽" label-width="30px">
-                      <el-input v-model="nodeForm.width"></el-input>
+                      <el-input v-model="nodeForm.width" @change="(v) => { this.nodeKeyChange('size', `${v}*${nodeForm.height}`) }"></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="12">
                     <el-form-item label="高" label-width="30px">
-                      <el-input v-model="nodeForm.height"></el-input>
+                      <el-input v-model="nodeForm.height" @change="(v) => { this.nodeKeyChange('size', `${nodeForm.width}*${v}`) }"></el-input>
                     </el-form-item>
                   </el-col>
                 </el-form>
                 <div class="tl ml10">
-                  <el-color-picker v-model="nodeForm.color"></el-color-picker>
+                  <el-color-picker v-model="nodeForm.color" @change="(v) => { this.nodeKeyChange('color', v) }"></el-color-picker>
                 </div>
               </div>
             </div>
             <div data-status="edge-selected" class="pannel">
               <div class="pannel-title">边属</div>
-              <div class="pannel-container"></div>
+              <div class="pannel-container">
+                <el-form class="m10" ref="form" :model="edgeForm" label-width="60px" size="mini">
+                  <el-form-item label="边属名称">
+                    <el-input v-model="edgeForm.label"></el-input>
+                  </el-form-item>
+                  <div class="tl ml10">
+                    <el-color-picker v-model="edgeForm.color"></el-color-picker>
+                  </div>
+                </el-form>
+              </div>
             </div>
             <div data-status="group-selected" class="pannel">
               <div class="pannel-title">群组</div>
@@ -113,7 +124,13 @@
             </div>
             <div data-status="multi-selected" class="pannel">
               <div class="pannel-title">多选</div>
-              <div class="pannel-container"></div>
+              <div class="pannel-container">
+                <el-form class="m10" ref="form" :model="moreForm" label-width="60px" size="mini">
+                  <div class="tl ml10">
+                    <el-color-picker v-model="moreForm.color" @change="moreColorChange"></el-color-picker>
+                  </div>
+                </el-form>
+              </div>
             </div>
           </div>
 
@@ -181,7 +198,6 @@
 
 <script>
 import G6Editor from '@antv/g6-editor'
-
 export default {
   components: {
   },
@@ -200,7 +216,18 @@ export default {
       diseaseTableHeadClass: 'no-margin',
       toggleGridFlag: false,
       diseaseName: '我是起始节点：派大星',
-      nodeForm: { // 节点编辑消息队列
+      nodeForm: { // 节点编辑承载表单
+        label: '', // 承载节点名
+        width: '', // 宽度
+        height: '', // 高度
+        color: '' // 背景颜色
+      },
+      edgeForm: { // 边属编辑承载表单
+        label: '', // 边属名称
+        color: '' // 颜色
+      },
+      moreForm: { // 多选节点承载表单
+        color: '' // 节点颜色
       }
     }
   },
@@ -214,7 +241,39 @@ export default {
   },
   methods: {
     /**
+     * node表单数据监听
+     * @param k 需要更新的数据模型
+     * @param v value
+     */
+    nodeKeyChange(k, v) {
+      const param = {}
+      param[k] = v
+      this.updateGraph(param)
+    },
+    /**
+     * 多选颜色变动联动
+     * @param color 需要更新的数据模型
+     */
+    moreColorChange(color) { // 多选颜色变动联动 监听不合适
+      this.updateGraph({ color })
+    },
+    /**
+     * 更新当前选中的节点
+     * @param updateModel 需要更新的数据模型 object
+     */
+    updateGraph(updateModel) {
+      const editor = this.editor
+      editor.executeCommand(() => {
+        const page = editor.getCurrentPage()
+        const selectedItems = page.getSelected()
+        selectedItems.forEach(item => {
+          page.update(item, updateModel)
+        })
+      })
+    },
+    /**
      * 是否显示网格
+     * @param v 是否显示
      */
     toggleGridChange(v) {
       const editor = this.editor
@@ -378,7 +437,28 @@ export default {
 
       curPage.on('afteritemselected', ev => { // 选中节点事件
         let vm = ev.item.getModel()
-        console.log(vm.shape, 'action: afteritemselected')
+        console.log(vm, 'action: afteritemselected')
+        const { type, label, color } = vm
+        switch (type) {
+          case 'node': // node
+            const { size } = vm
+            Object.assign(this.nodeForm, {
+              color,
+              width: size.split('*')[0],
+              height: size.split('*')[1],
+              label
+            })
+            Object.assign(this.moreForm, { // 选中节点填充下多选
+              color
+            })
+            break
+          default: // edge 默认没有color label
+            Object.assign(this.edgeForm, {
+              label,
+              color
+            })
+            break
+        }
       })
       curPage.on('afterzoom', ev => {
         let zoom = ev.updateMatrix[0]
@@ -403,20 +483,6 @@ export default {
               break
           }
         }
-      })
-    },
-    /**
-     * 更新当前选中的节点
-     * @param updateModel 需要更新的数据模型 object
-     */
-    updateGraph(updateModel) {
-      const editor = this.editor
-      editor.executeCommand(() => {
-        const page = editor.getCurrentPage()
-        const selectedItems = page.getSelected()
-        selectedItems.forEach(item => {
-          page.update(item, updateModel)
-        })
       })
     },
 
