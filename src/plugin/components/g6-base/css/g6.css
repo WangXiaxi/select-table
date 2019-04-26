@@ -6047,7 +6047,7 @@ a.ant-btn-sm {
   color: rgba(255, 255, 255, 0.35) !important;
 }
 
-#navigator{
+.drawpannel{
   width: 200px;
   height: 186px;
   position: absolute;
@@ -6055,12 +6055,12 @@ a.ant-btn-sm {
   right: 0px;
   z-index: 3;
 }
-#navigator .slider{
+.drawpannel .slider{
   margin: 7px 10px 10px;
   float: left;
   width: 120px;
 }
-#navigator #minimap{
+.drawpannel #minimap{
   width: 200px;
   height: 120px;
 }
@@ -27669,6 +27669,7 @@ input{
 }
 .bottom-container{
   position: relative;
+  top: 42px;
 }
 .pannel-title{
   height: 32px;
