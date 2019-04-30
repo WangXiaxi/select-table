@@ -106,11 +106,11 @@ export default {
      */
     heightChange(v) {
       let val = parseFloat(v)
-      if (val && val >= 1) {
-        this.nodeKeyChange('size', `${this.nodeForm.width}*${val}`)
-      } else {
+      if (!(val && val >= 1)) {
+        val = 1
         this.nodeForm.height = 1
       }
+      this.nodeKeyChange('size', `${this.nodeForm.width}*${val}`)
     },
     /**
      * 宽度变动
@@ -118,11 +118,11 @@ export default {
      */
     widthChange(v) {
       let val = parseFloat(v)
-      if (val && val >= 1) {
-        this.nodeKeyChange('size', `${val}*${this.nodeForm.height}`)
-      } else {
+      if (!(val && val >= 1)) {
+        val = 1
         this.nodeForm.width = 1
       }
+      this.nodeKeyChange('size', `${val}*${this.nodeForm.height}`)
     },
     /**
      * 宽度keydown
