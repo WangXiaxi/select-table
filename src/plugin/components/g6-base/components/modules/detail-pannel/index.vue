@@ -10,12 +10,12 @@
           </el-form-item>
           <el-col :span="12">
             <el-form-item label="宽" label-width="30px">
-              <el-input v-model="nodeForm.width" @change="(v) => { this.nodeKeyChange('size', `${v}*${nodeForm.height}`) }"></el-input>
+              <el-input v-model.number="nodeForm.width" @change="widthChange" @keydown.native="widthKeyDown"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="高" label-width="30px">
-              <el-input v-model="nodeForm.height" @change="(v) => { this.nodeKeyChange('size', `${nodeForm.width}*${v}`) }"></el-input>
+              <el-input v-model.number="nodeForm.height" @change="heightChange" @keydown.native="heightKeyDown"></el-input>
             </el-form-item>
           </el-col>
         </el-form>
@@ -100,6 +100,79 @@ export default {
     this.init()
   },
   methods: {
+    /**
+     * 高度变动
+     * @param v value
+     */
+    heightChange(v) {
+      let val = parseFloat(v)
+      if (val && val >= 1) {
+        this.nodeKeyChange('size', `${this.nodeForm.width}*${val}`)
+      } else {
+        this.nodeForm.height = 1
+      }
+    },
+    /**
+     * 宽度变动
+     * @param v value
+     */
+    widthChange(v) {
+      let val = parseFloat(v)
+      if (val && val >= 1) {
+        this.nodeKeyChange('size', `${val}*${this.nodeForm.height}`)
+      } else {
+        this.nodeForm.width = 1
+      }
+    },
+    /**
+     * 宽度keydown
+     * @param e event
+     */
+    widthKeyDown(e) { // 宽度keydown
+      this.sizeKeydown('width', e)
+    },
+    /**
+     * 高度度keydown
+     * @param e event
+     */
+    heightKeyDown(e) { // 高度keydown
+      this.sizeKeydown('height', e)
+    },
+    /**
+     * 执行渲染keydown
+     * @param key key
+     * @param code 键盘按键
+     */
+    sizeKeydown(key, e) {
+      const act = () => { // 执行操作赋值
+        let wCopy = 1
+        let hCopy = 1
+        const { width, height } = this.nodeForm
+        if (width > 1) {
+          wCopy = width
+        } else {
+          this.nodeForm.width = 1
+        }
+        if (height > 1) {
+          hCopy = height
+        } else {
+          this.nodeForm.height = 1
+        }
+        this.nodeKeyChange('size', `${wCopy}*${hCopy}`)
+      }
+      switch (e.code) {
+        case 'ArrowDown':
+          --this.nodeForm[key]
+          act()
+          e.preventDefault()
+          break
+        case 'ArrowUp':
+          ++this.nodeForm[key]
+          act()
+          e.preventDefault()
+          break
+      }
+    },
     /**
      * 初始化添加
      */

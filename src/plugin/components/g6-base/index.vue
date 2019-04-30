@@ -31,8 +31,6 @@ export default {
   data() {
     return {
       editor: null,
-      diseaseName: '我是起始节点：派大星',
-      diseaseId: this._uid, // 起始节点 方便返回等定位
       nodeForm: { // 节点编辑承载表单
         label: '', // 承载节点名
         width: '', // 宽度
@@ -122,13 +120,24 @@ export default {
         console.log(vm.shape, 'action: hoveranchor:beforeaddedge')
       })
       curPage.on('dragedge:beforeshowanchor', ev => { // 监听显示锚点虚线事件
-        console.log('action: dragedge:beforeshowanchor')
+        const source = ev.source // 起始节点
+        const sourceId = ev.source.id // 线的节点id
+        const target = ev.target // 可选目标节点
+        const targetId = target.model.id // 可选目标节点id
+        // 例子 每个结点不能连自身
+        if (sourceId === targetId) {
+          ev.cancel = true // 取消连线
+        }
+        // 用来晒选等操作
+        console.log(source, sourceId, target, targetId)
+        console.log('action: dragedge: beforeshowanchor')
       })
 
       curPage.on('afteritemselected', ev => { // 选中节点事件
         let vm = ev.item.getModel()
         console.log(vm, 'action: afteritemselected')
         const { label, color, size } = vm
+        console.log(label, color, size)
         Object.assign(this.nodeForm, {
           color,
           width: size ? size.split('*')[0] : undefined,
@@ -143,21 +152,25 @@ export default {
       })
       this.editor.on('aftercommandexecute', ev => { // 监听命令
         console.log(ev, 'action: aftercommandexecute')
-        if (ev.command.name === 'add') { // 添加节点
-          switch (ev.command.addModel.shape) {
-            case 'flow-circle': // 节点二
-              console.log('add:flow-circle')
-              break
-            case 'flow-rhombus': // 节点二
-              console.log('add:flow-rhombus')
-              break
-            case 'flow-rect': // 节点三
-              console.log('add:flow-rect')
-              break
-            case 'flow-capsule': // 节点四
-              console.log('add:flow-capsule')
-              break
-          }
+        switch (ev.command.name) {
+          case 'add': // 新增
+            switch (ev.command.addModel.shape) {
+              case 'flow-circle': // 节点二
+                console.log('add: flow-circle')
+                break
+              case 'flow-rhombus': // 节点二
+                console.log('add: flow-rhombus')
+                break
+              case 'flow-rect': // 节点三
+                console.log('add: flow-rect')
+                break
+              case 'flow-capsule': // 节点四
+                console.log('add: flow-capsule')
+                break
+            }
+            break
+          case 'redo': // 重做
+            break
         }
       })
     },
@@ -190,5 +203,5 @@ export default {
 }
 </script>
 <style type='text/css'>
-    @import './css/g6.css'
+  @import './css/g6.css'
 </style>

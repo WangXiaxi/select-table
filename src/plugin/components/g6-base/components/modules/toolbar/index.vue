@@ -42,6 +42,8 @@ export default {
   },
   data() {
     return {
+      diseaseName: '我是起始节点：派大星',
+      diseaseId: String(this._uid) // 起始节点 方便返回等定位
     }
   },
   created() {
@@ -75,7 +77,7 @@ export default {
         },
         // 正向命令
         execute(eidtor) {
-          _self.saveGraph()
+          _self.$parent.saveGraph()
         },
         shortcutCodes: [['ctrlKey', 's']] // 快捷键：Ctrl+s
       })
@@ -105,8 +107,7 @@ export default {
             label: _self.diseaseName,
             x: 100,
             y: 100,
-            size: rootWidth + '*72',
-            category: 0
+            size: rootWidth + '*72'
           })
         },
         // 反回命令
