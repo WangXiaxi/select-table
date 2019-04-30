@@ -31,7 +31,7 @@ export default {
   data() {
     return {
       editor: null,
-      nodeForm: { // 节点编辑承载表单
+      nodeForm: { // 节点编辑承载表单 可支持的很多updateGraph方法中列出，需要可根据业务修改
         label: '', // 承载节点名
         width: '', // 宽度
         height: '', // 高度
@@ -49,6 +49,33 @@ export default {
   },
   methods: {
     /**
+     * 初始化g6Editor
+     */
+    initG6Editor() {
+      this.$refs.container.style.height = `${this.setEditorHeight() + 42}px` // 设置下高度
+      const page = new G6Editor.Flow({
+        graph: {
+          container: 'page',
+          height: this.setEditorHeight()
+        },
+        grid: null,
+        shortcut: { // 快捷键 命令列表被官方删了
+          save: false // 自定义命令 设置
+        },
+        noEndEdge: false // 不允许悬空边
+      })
+      page.getGraph().edge({
+        shape: 'flow-polyline-round' // line polyline quadratic cubic 与G6一样
+      })
+      this.editor.add(page)
+      this.setEventListenner() // 设置事件监听
+      const tempData = this.readLocalStorage()
+      if (tempData) { // 简单处理
+        page.read(JSON.parse(tempData)) // 读数据
+      }
+    },
+
+    /**
      * node表单数据监听
      * @param k 需要更新的数据模型
      * @param v value
@@ -62,21 +89,21 @@ export default {
      * 更新当前选中的节点
      * @param model 需要更新的数据模型 object
      * { // 节点
-     *  id: 'node1', // id 必须唯一
-     *  color: '#333', // 颜色（该颜色被认为是 ant-design-palettes 的6阶色，激
-     *  活颜色、选中会根据该色值自动设置）
-     *  size: 10 || [10, 10], // 尺寸 || [宽, 高]
-     *  shape: 'circle', // 所用图形
-     *  style: { // 关键形样式（优先级高于color）
-     *  fill: 'red',
-     *  stroke: 'blue'
-     *  },
-     *  label: '文本标签' || { // 文本标签 || 文本图形配置
-     *  text: '文本标签',
-     *  fill: 'green'
-     *  },
-     *  parent: 'group1', // 所属组
-     *  index: 1, // 渲染层级
+     *   id: 'node1', // id 必须唯一
+     *   color: '#333', // 颜色（该颜色被认为是 ant-design-palettes 的6阶色，激
+     *   活颜色、选中会根据该色值自动设置）
+     *   size: 10 || [10, 10], // 尺寸 || [宽, 高]
+     *   shape: 'circle', // 所用图形
+     *   style: { // 关键形样式（优先级高于color）
+     *     fill: 'red',
+     *     stroke: 'blue'
+     *   },
+     *   label: '文本标签' || { // 文本标签 || 文本图形配置
+     *     text: '文本标签',
+     *     fill: 'green'
+     *   },
+     *   parent: 'group1', // 所属组
+     *   index: 1, // 渲染层级
      * }
      * { // 边
      *   id: 'edge1', // id 必须唯一
@@ -123,32 +150,6 @@ export default {
       let containarHeight = bodyHeight - 42
       containarHeight = containarHeight < 510 ? 510 : containarHeight
       return containarHeight
-    },
-
-    /**
-     * 初始化g6Editor
-     */
-    initG6Editor() {
-      this.$refs.container.style.height = `${this.setEditorHeight() + 42}px` // 设置下高度
-      const page = new G6Editor.Flow({
-        graph: {
-          container: 'page',
-          height: this.setEditorHeight()
-        },
-        shortcut: {
-          save: true
-        },
-        noEndEdge: false // 不允许悬空边
-      })
-      page.getGraph().edge({
-        shape: 'flow-polyline-round' // line polyline quadratic cubic 与G6一样
-      })
-      this.editor.add(page)
-      this.setEventListenner() // 设置事件监听
-      const tempData = this.readLocalStorage()
-      if (tempData) { // 简单处理
-        page.read(JSON.parse(tempData)) // 读数据
-      }
     },
 
     /**

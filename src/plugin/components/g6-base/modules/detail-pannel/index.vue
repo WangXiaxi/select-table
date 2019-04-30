@@ -198,7 +198,12 @@ export default {
       const editor = this.editor
       const page = editor.getCurrentPage()
       if (v) {
-        page.showGrid()
+        page.showGrid({ // 参考g6
+          cell: 30, // 网孔尺寸
+          line: { // 网格线样式
+            stroke: '#333'
+          }
+        })
       } else {
         page.hideGrid()
       }

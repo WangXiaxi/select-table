@@ -112,7 +112,6 @@ export default {
         },
         // 反回命令
         back(editor) {
-          console.log(1234)
           const curPage = editor.getCurrentPage()
           curPage.remove(_self.diseaseId)
         }
