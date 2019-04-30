@@ -20,10 +20,11 @@
           <i class="el-icon-arrow-down el-icon--right"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item command="0.5">50%</el-dropdown-item>
-          <el-dropdown-item command="1">100%</el-dropdown-item>
-          <el-dropdown-item command="1.5">150%</el-dropdown-item>
-          <el-dropdown-item command="2">200%</el-dropdown-item>
+          <el-dropdown-item
+            v-for="(item, index) in ctnOptions"
+            :command="item"
+            :key="index"
+          >{{item * 100}}%</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
@@ -53,10 +54,10 @@ export default {
   },
   data() {
     return {
+      ctnOptions: [ 0.5, 1, 1.5, 2 ], // 缩放下拉
       curZoom: 1, // 当前缩放比率
       minZoom: 0.5, // 最小缩放比率
       maxZoom: 2, // 最大缩放比率
-      /* 控制右侧详情面板的内容显现 start */
       zoomSlider: 100, // 默认滑块取值为100
       valueFilterable: false // 值下拉框是否可以检索
     }

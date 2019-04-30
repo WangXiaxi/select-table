@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import modules from './components/modules'
+import modules from './modules'
 import G6Editor from '@antv/g6-editor'
 export default {
   components: {
@@ -155,7 +155,7 @@ export default {
         switch (ev.command.name) {
           case 'add': // 新增
             switch (ev.command.addModel.shape) {
-              case 'flow-circle': // 节点二
+              case 'flow-circle': // 节点一
                 console.log('add: flow-circle')
                 break
               case 'flow-rhombus': // 节点二
